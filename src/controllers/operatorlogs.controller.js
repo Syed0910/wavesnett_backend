@@ -1,0 +1,53 @@
+// controllers/operatorlogs.controller.js
+
+const Operatorlog = require('../models/operatorlogs');
+
+exports.getAll = async (req, res) => {
+  try {
+    const rows = await Operatorlog.findAll({ raw: true });
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getById = async (req, res) => {
+  try {
+    const row = await Operatorlog.findByPk(req.params.id);
+    if (!row) return res.status(404).json({ message: 'Operatorlog record not found' });
+    res.json(row);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.create = async (req, res) => {
+  try {
+    const newRow = await Operatorlog.create(req.body);
+    res.status(201).json({ message: 'Operatorlog record created', id: newRow.id });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.update = async (req, res) => {
+  try {
+    const row = await Operatorlog.findByPk(req.params.id);
+    if (!row) return res.status(404).json({ message: 'Operatorlog record not found' });
+    await row.update(req.body);
+    res.json({ message: 'Operatorlog record updated' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.delete = async (req, res) => {
+  try {
+    const row = await Operatorlog.findByPk(req.params.id);
+    if (!row) return res.status(404).json({ message: 'Operatorlog record not found' });
+    await row.destroy();
+    res.json({ message: 'Operatorlog record deleted' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
