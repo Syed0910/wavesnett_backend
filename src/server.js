@@ -26,6 +26,10 @@ app.use('/api/subscribers', subscriberRoutes);
 const userRoutes = require('./routes/users.routes');
 app.use('/api/users', userRoutes);
 
+// UserDetails routes
+const userDetailsRoutes = require('./routes/userDetails.routes');
+app.use('/api/userdetails', userDetailsRoutes);
+
 // Root route
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to the API' });
