@@ -18,3 +18,14 @@ exports.getUserDetailsById = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+// ✅ Get all users details
+exports.getAllUserDetails = async (req, res) => {
+  try {
+    const allUsers = await UserDetails.findAll();
+    res.json(allUsers);
+  } catch (error) {
+    console.error("Error fetching all user details:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
