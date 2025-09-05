@@ -40,8 +40,8 @@ const UserDetails = sequelize.define("UserDetails", {
     defaultValue: null,
   },
 }, {
-  tableName: "users",   // ✅ your DDL is for `users` table
-  timestamps: false,    // because you already have created_at / updated_at
+  tableName: "users",
+  timestamps: false,
 });
 
 module.exports = UserDetails;
