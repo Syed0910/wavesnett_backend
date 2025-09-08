@@ -30,10 +30,17 @@ app.use('/api/users', userRoutes);
 const userDetailsRoutes = require('./routes/userDetails.routes');
 app.use('/api/userdetails', userDetailsRoutes);
 
+// ✅ Operator routes
+  const operatorRoutes = require('./routes/operators.routes');
+  app.use('/api/operators', operatorRoutes);
+
 // Root route
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to the API' });
+
 });
+
+
 
 // -------------------- START SERVER -------------------- //
 const startServer = async () => {
