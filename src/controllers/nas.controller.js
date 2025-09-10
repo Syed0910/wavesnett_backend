@@ -1,5 +1,5 @@
 // controllers/nas.controller.js
-const Nas = require('../models/nas');
+const Nas = require("../models/nas");
 
 // ✅ Create new NAS
 exports.createNas = async (req, res) => {
@@ -14,7 +14,9 @@ exports.createNas = async (req, res) => {
 // ✅ Get all NAS
 exports.getAllNas = async (req, res) => {
   try {
-    const nasList = await Nas.findAll();
+    const nasList = await Nas.findAll({
+      attributes: ["id", "nasName", "nasIp", "nasType", "zoneName"], // only frontend needs
+    });
     res.json(nasList);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -24,8 +26,10 @@ exports.getAllNas = async (req, res) => {
 // ✅ Get NAS by ID
 exports.getNasById = async (req, res) => {
   try {
-    const nas = await Nas.findByPk(req.params.id);
-    if (!nas) return res.status(404).json({ error: 'NAS not found' });
+    const nas = await Nas.findByPk(req.params.id, {
+      attributes: ["id", "nasName", "nasIp", "nasType", "zoneName"], // only frontend needs
+    });
+    if (!nas) return res.status(404).json({ error: "NAS not found" });
     res.json(nas);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -36,7 +40,7 @@ exports.getNasById = async (req, res) => {
 exports.updateNas = async (req, res) => {
   try {
     const nas = await Nas.findByPk(req.params.id);
-    if (!nas) return res.status(404).json({ error: 'NAS not found' });
+    if (!nas) return res.status(404).json({ error: "NAS not found" });
 
     await nas.update(req.body);
     res.json(nas);
@@ -49,10 +53,10 @@ exports.updateNas = async (req, res) => {
 exports.deleteNas = async (req, res) => {
   try {
     const nas = await Nas.findByPk(req.params.id);
-    if (!nas) return res.status(404).json({ error: 'NAS not found' });
+    if (!nas) return res.status(404).json({ error: "NAS not found" });
 
     await nas.destroy();
-    res.json({ message: 'NAS deleted successfully' });
+    res.json({ message: "NAS deleted successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
