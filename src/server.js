@@ -1,4 +1,3 @@
-// server.js
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
@@ -43,6 +42,18 @@ app.use("/api/operators", operatorRoutes);
 // NAS
 const nasRoutes = require("./routes/nas.routes");
 app.use("/api/nas", nasRoutes);
+
+// Invoices
+const invoiceRoutes = require("./routes/invoices.routes");
+app.use("/api/invoices", invoiceRoutes);
+
+// Receipts
+const receiptsRoutes = require("./routes/receipts.routes");
+app.use("/api/receipts", receiptsRoutes);
+
+// Online Transactions
+const onlineTransactionsRoutes = require("./routes/userpgs.routes");
+app.use("/api/online-transactions", onlineTransactionsRoutes);
 
 // -------------------- ERROR HANDLING -------------------- //
 // 404 handler

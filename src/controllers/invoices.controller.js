@@ -1,10 +1,24 @@
-// controllers/invoices.controller.js
-
-const Invoice = require('../models/invoices');
+const Invoice = require("../models/invoices");
 
 exports.getAll = async (req, res) => {
   try {
-    const rows = await Invoice.findAll({ raw: true });
+    const rows = await Invoice.findAll({
+      raw: true,
+      attributes: [
+        "id",
+        "invoiceNo",
+        ["invoiceDate", "date"],
+        ["user_id", "userName"], // alias user_id → userName
+        ["username", "name"],
+        ["invstatus_id", "status"],
+        ["total", "totalAmt"],
+        "createdBy",
+        ["zoneName", "zone"],
+        "receiveAmount",
+        "notes",
+      ],
+    });
+
     res.json(rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -13,8 +27,25 @@ exports.getAll = async (req, res) => {
 
 exports.getById = async (req, res) => {
   try {
-    const row = await Invoice.findByPk(req.params.id);
-    if (!row) return res.status(404).json({ message: 'Invoice record not found' });
+    const row = await Invoice.findByPk(req.params.id, {
+      raw: true,
+      attributes: [
+        "id",
+        "invoiceNo",
+        ["invoiceDate", "date"],
+        ["user_id", "userName"],
+        ["username", "name"],
+        ["invstatus_id", "status"],
+        ["total", "totalAmt"],
+        "createdBy",
+        ["zoneName", "zone"],
+        "receiveAmount",
+        "notes",
+      ],
+    });
+
+    if (!row) return res.status(404).json({ error: "Invoice not found" });
+
     res.json(row);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -23,8 +54,8 @@ exports.getById = async (req, res) => {
 
 exports.create = async (req, res) => {
   try {
-    const newRow = await Invoice.create(req.body);
-    res.status(201).json({ message: 'Invoice record created', id: newRow.id });
+    const invoice = await Invoice.create(req.body);
+    res.status(201).json(invoice);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -32,10 +63,13 @@ exports.create = async (req, res) => {
 
 exports.update = async (req, res) => {
   try {
-    const row = await Invoice.findByPk(req.params.id);
-    if (!row) return res.status(404).json({ message: 'Invoice record not found' });
-    await row.update(req.body);
-    res.json({ message: 'Invoice record updated' });
+    const [updated] = await Invoice.update(req.body, {
+      where: { id: req.params.id },
+    });
+
+    if (!updated) return res.status(404).json({ error: "Invoice not found" });
+
+    res.json({ message: "Invoice updated successfully" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -43,10 +77,13 @@ exports.update = async (req, res) => {
 
 exports.delete = async (req, res) => {
   try {
-    const row = await Invoice.findByPk(req.params.id);
-    if (!row) return res.status(404).json({ message: 'Invoice record not found' });
-    await row.destroy();
-    res.json({ message: 'Invoice record deleted' });
+    const deleted = await Invoice.destroy({
+      where: { id: req.params.id },
+    });
+
+    if (!deleted) return res.status(404).json({ error: "Invoice not found" });
+
+    res.json({ message: "Invoice deleted successfully" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
