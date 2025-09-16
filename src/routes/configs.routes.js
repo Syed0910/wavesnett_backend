@@ -9,5 +9,9 @@ router.get('/:id', configsController.getById);
 router.post('/', configsController.create);
 router.put('/:id', configsController.update);
 router.delete('/:id', configsController.delete);
+router.get('/tax/config', configsController.getTaxConfig);
+router.put('/tax/config', configsController.updateTaxConfig);
+router.get('/kyc/config', configsController.getKycConfig);
+router.put('/kyc/config', configsController.updateKycConfig);
 
 module.exports = router;

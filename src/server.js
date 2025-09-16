@@ -55,6 +55,13 @@ app.use("/api/receipts", receiptsRoutes);
 const onlineTransactionsRoutes = require("./routes/userpgs.routes");
 app.use("/api/online-transactions", onlineTransactionsRoutes);
 
+// ✅ Use Billbooks Routes
+const billbooksRoutes = require("./routes/billbooks.routes");
+app.use("/api/billbooks", billbooksRoutes);
+
+const configsRoutes = require('./routes/configs.routes');
+app.use('/api/configs', configsRoutes);
+
 // -------------------- ERROR HANDLING -------------------- //
 // 404 handler
 app.use((req, res, next) => {
