@@ -97,3 +97,77 @@ module.exports = {
   delete: del,
   getMailConfig,
 };
+exports.getTaxConfig = async (req, res) => {
+  try {
+    const row = await Config.findOne({ where: { name: 'configTax' } });
+    if (!row) return res.status(404).json({ message: 'Tax config not found' });
+
+    // Parse the JSON value before sending
+    const parsedValue = row.value ? JSON.parse(row.value) : {};
+    res.json(parsedValue);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// PUT /api/configs/tax
+exports.updateTaxConfig = async (req, res) => {
+  try {
+    const row = await Config.findOne({ where: { name: 'configTax' } });
+    if (!row) return res.status(404).json({ message: 'Tax config not found' });
+
+    // Convert updated tax settings back to JSON
+    await row.update({ value: JSON.stringify(req.body) });
+
+    res.json({ message: 'Tax configuration updated successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+exports.getKycConfig = async (req, res) => {
+  try {
+    const row = await Config.findOne({ where: { name: 'configKyc' }, raw: true });
+    if (!row) return res.status(404).json({ message: "KYC config not found" });
+
+    const value = row.value ? JSON.parse(row.value) : {};
+    res.json(value);
+  } catch (err) {
+    console.error("Error fetching KYC config:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.updateKycConfig = async (req, res) => {
+  try {
+    const { provider, apiKey, isEnabled } = req.body;
+
+    const payload = JSON.stringify({
+      provider,
+      apiKey,
+      isEnabled
+    });
+
+    const [updated] = await Config.update(
+      { value: payload },
+      { where: { name: 'configKyc' } }
+    );
+
+    if (updated === 0) {
+      // No record exists, create one
+      await Config.create({
+        name: 'configKyc',
+        value: payload,
+        operator_id: 1,  // adjust based on your multi-tenant logic
+        zoneName: 'default'
+      });
+      return res.status(201).json({ message: "KYC config created" });
+    }
+
+    res.json({ message: "KYC config updated" });
+  } catch (err) {
+    console.error("Error updating KYC config:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

@@ -3,6 +3,8 @@ const express = require('express');
 const router = express.Router();
 const userpgsController = require('../controllers/userpgs.controller');
 
+// -------------------- USER PGS ROUTES -------------------- //
+
 // GET all userpgs records
 router.get('/', userpgsController.getUserpgs);
 
@@ -19,5 +21,3 @@ router.get('/', userpgsController.getUserpgs);
 // router.delete('/:id', userpgsController.deleteUserpg);
 
 module.exports = router;
-
-
