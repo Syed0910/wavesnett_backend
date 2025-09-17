@@ -55,12 +55,23 @@ app.use("/api/receipts", receiptsRoutes);
 const onlineTransactionsRoutes = require("./routes/userpgs.routes");
 app.use("/api/online-transactions", onlineTransactionsRoutes);
 
+  // Recharges routes
+  const reportsRoutes = require("./routes/reports.routes");
+app.use("/api/reports", reportsRoutes);
+const rechargeRoutes = require("./routes/recharges.routes");
+app.use("/api/recharges", rechargeRoutes);
+
+  // Configs routes
+const configsRoutes = require('./routes/configs.routes');
+app.use('/api/configs', configsRoutes);
+
+const emailTemplateRoutes = require("./routes/emailtemplates.routes");
+app.use("/api/emailtemplates", emailTemplateRoutes);
+
+
 // ✅ Use Billbooks Routes
 const billbooksRoutes = require("./routes/billbooks.routes");
 app.use("/api/billbooks", billbooksRoutes);
-
-const configsRoutes = require('./routes/configs.routes');
-app.use('/api/configs', configsRoutes);
 
 // -------------------- ERROR HANDLING -------------------- //
 // 404 handler

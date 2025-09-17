@@ -14,4 +14,7 @@ router.put('/tax/config', configsController.updateTaxConfig);
 router.get('/kyc/config', configsController.getKycConfig);
 router.put('/kyc/config', configsController.updateKycConfig);
 
+// ✅ New endpoint: fetch mail config by name = 'configEmail'
+router.get('/mail/config', configsController.getMailConfig);
+
 module.exports = router;
