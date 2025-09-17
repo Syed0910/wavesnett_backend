@@ -84,9 +84,26 @@ app.use("/api/receipts", receiptsRoutes);
 const onlineTransactionsRoutes = require("./routes/userpgs.routes");
 app.use("/api/online-transactions", onlineTransactionsRoutes);
 
+
 // Billbooks Routes
 const billbooksRoutes = require("./routes/billbooks.routes");
 app.use("/api/billbooks", billbooksRoutes);
+
+
+  // Recharges routes
+  const reportsRoutes = require("./routes/reports.routes");
+app.use("/api/reports", reportsRoutes);
+const rechargeRoutes = require("./routes/recharges.routes");
+app.use("/api/recharges", rechargeRoutes);
+
+  // Configs routes
+const configsRoutes = require('./routes/configs.routes');
+app.use('/api/configs', configsRoutes);
+
+const emailTemplateRoutes = require("./routes/emailtemplates.routes");
+app.use("/api/emailtemplates", emailTemplateRoutes);
+
+
 
 // -------------------- ERROR HANDLING -------------------- //
 // Request logging middleware (optional - for debugging)
