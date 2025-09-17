@@ -10,4 +10,7 @@ router.post('/', configsController.create);
 router.put('/:id', configsController.update);
 router.delete('/:id', configsController.delete);
 
+// ✅ New endpoint: fetch mail config by name = 'configEmail'
+router.get('/mail/config', configsController.getMailConfig);
+
 module.exports = router;

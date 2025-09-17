@@ -34,6 +34,20 @@ app.use('/api/userdetails', userDetailsRoutes);
   const operatorRoutes = require('./routes/operators.routes');
   app.use('/api/operators', operatorRoutes);
 
+  // Recharges routes
+  const reportsRoutes = require("./routes/reports.routes");
+app.use("/api/reports", reportsRoutes);
+const rechargeRoutes = require("./routes/recharges.routes");
+app.use("/api/recharges", rechargeRoutes);
+
+  // Configs routes
+const configsRoutes = require('./routes/configs.routes');
+app.use('/api/configs', configsRoutes);
+
+const emailTemplateRoutes = require("./routes/emailtemplates.routes");
+app.use("/api/emailtemplates", emailTemplateRoutes);
+
+
 // Root route
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to the API' });
