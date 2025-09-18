@@ -87,17 +87,7 @@ const getMailConfig = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
-
-// Export everything
-module.exports = {
-  getAll,
-  getById,
-  create,
-  update,
-  delete: del,
-  getMailConfig,
-};
-exports.getTaxConfig = async (req, res) => {
+const getTaxConfig = async (req, res) => {
   try {
     const row = await Config.findOne({ where: { name: 'configTax' } });
     if (!row) return res.status(404).json({ message: 'Tax config not found' });
@@ -111,7 +101,7 @@ exports.getTaxConfig = async (req, res) => {
 };
 
 // PUT /api/configs/tax
-exports.updateTaxConfig = async (req, res) => {
+const updateTaxConfig = async (req, res) => {
   try {
     const row = await Config.findOne({ where: { name: 'configTax' } });
     if (!row) return res.status(404).json({ message: 'Tax config not found' });
@@ -126,7 +116,7 @@ exports.updateTaxConfig = async (req, res) => {
 };
 
 
-exports.getKycConfig = async (req, res) => {
+const getKycConfig = async (req, res) => {
   try {
     const row = await Config.findOne({ where: { name: 'configKyc' }, raw: true });
     if (!row) return res.status(404).json({ message: "KYC config not found" });
@@ -139,7 +129,7 @@ exports.getKycConfig = async (req, res) => {
   }
 };
 
-exports.updateKycConfig = async (req, res) => {
+const updateKycConfig = async (req, res) => {
   try {
     const { provider, apiKey, isEnabled } = req.body;
 
@@ -170,4 +160,18 @@ exports.updateKycConfig = async (req, res) => {
     console.error("Error updating KYC config:", err);
     res.status(500).json({ message: "Internal server error" });
   }
+};
+
+// Export everything
+module.exports = {
+  getAll,
+  getById,
+  create,
+  update,
+  delete: del,
+  getMailConfig,
+  getTaxConfig,
+  updateTaxConfig,
+  getKycConfig,
+  updateKycConfig
 };
