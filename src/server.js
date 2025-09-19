@@ -48,9 +48,7 @@ app.get("/health", (req, res) => {
   });
 });
 
-// Configs Routes 
-const configsRoutes = require('./routes/configs.routes');
-app.use('/api/configs', configsRoutes);
+
 
 // Subscribers
 const subscriberRoutes = require("./routes/subscriber.routes");
@@ -97,9 +95,14 @@ const rechargeRoutes = require("./routes/recharges.routes");
 app.use("/api/recharges", rechargeRoutes);
 
   // Configs routes
-const configsRoutes = require('./routes/configs.routes');
-app.use('/api/configs', configsRoutes);
+const configRoutes = require('./routes/configs.routes');
+app.use('/api/configs', configRoutes);
 
+//Ott routes
+const ottRoutes = require('./routes/otts.routes');
+app.use('/api/otts', ottRoutes);
+
+//email template
 const emailTemplateRoutes = require("./routes/emailtemplates.routes");
 app.use("/api/emailtemplates", emailTemplateRoutes);
 
