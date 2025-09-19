@@ -59,8 +59,13 @@ app.use("/api/online-transactions", onlineTransactionsRoutes);
 const billbooksRoutes = require("./routes/billbooks.routes");
 app.use("/api/billbooks", billbooksRoutes);
 
-const configsRoutes = require('./routes/configs.routes');
-app.use('/api/configs', configsRoutes);
+// ✅ Use Configs Routes
+const configsRoutes = require("./routes/configs.routes");
+app.use("/api/configs", configsRoutes);
+
+// ✅ NEW: Bulk User Lots Routes
+const bulkLotsRoutes = require("./routes/bulkLots.routes");
+app.use("/api/bulk-lots", bulkLotsRoutes);
 
 // -------------------- ERROR HANDLING -------------------- //
 // 404 handler
