@@ -49,7 +49,6 @@ app.get("/health", (req, res) => {
 });
 
 
-
 // Subscribers
 const subscriberRoutes = require("./routes/subscriber.routes");
 app.use("/api/subscribers", subscriberRoutes);
