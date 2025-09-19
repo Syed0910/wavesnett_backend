@@ -11,6 +11,8 @@ exports.getAll = async (req, res) => {
   }
 };
 
+// test---
+
 // GET /api/configs/:id
 exports.getById = async (req, res) => {
   try {
