@@ -18,6 +18,7 @@ router.put('/tax/config', configsController.updateTaxConfig);
 router.get('/kyc/config', configsController.getKycConfig);
 router.put('/kyc/config', configsController.updateKycConfig);
 
+
 router.get('/theme/config', configsController.getThemeConfig);
 router.put('/theme/config', configsController.updateThemeConfig);
 
@@ -34,3 +35,4 @@ router.get('/permissions/config', configsController.getPermissionsConfig);
 router.put('/permissions/config', configsController.updatePermissionsConfig);
 
 module.exports = router;
+
