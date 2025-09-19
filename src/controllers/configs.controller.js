@@ -63,6 +63,8 @@ exports.delete = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+// GET /api/configs/tax
 exports.getTaxConfig = async (req, res) => {
   try {
     const row = await Config.findOne({ where: { name: 'configTax' } });
@@ -92,9 +94,6 @@ exports.updateTaxConfig = async (req, res) => {
 };
 
 
-
-
-// GET /api/configs/kyc/config
 exports.getKycConfig = async (req, res) => {
   try {
     console.log("Fetching KYC config..."); // Debug log
@@ -125,6 +124,7 @@ exports.getKycConfig = async (req, res) => {
     res.status(500).json({ message: "Internal server error", error: err.message });
   }
 };
+
 exports.updateKycConfig = async (req, res) => {
   try {
     console.log("Updating KYC config with:", req.body); // Debug log
@@ -178,3 +178,215 @@ exports.updateKycConfig = async (req, res) => {
     res.status(500).json({ message: "Internal server error", error: err.message });
   }
 };
+
+
+// GET /api/configs/theme
+exports.getThemeConfig = async (req, res) => {
+  try {
+    const row = await Config.findOne({ where: { name: 'themeConfig' }, raw: true });
+    if (!row) return res.status(404).json({ message: "Theme config not found" });
+
+    const value = row.value ? JSON.parse(row.value) : {};
+    res.json(value);
+  } catch (err) {
+    console.error("Error fetching theme config:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// PUT /api/configs/theme
+exports.updateThemeConfig = async (req, res) => {
+  try {
+    const payload = JSON.stringify(req.body);
+
+    const [updated] = await Config.update(
+      { value: payload },
+      { where: { name: 'themeConfig' } }
+    );
+
+    if (updated === 0) {
+      // No record exists, create one
+      await Config.create({
+        name: 'themeConfig',
+        value: payload,
+        operator_id: 1,
+        zoneName: 'default'
+      });
+      return res.status(201).json({ message: "Theme config created" });
+    }
+
+    res.json({ message: "Theme config updated" });
+  } catch (err) {
+    console.error("Error updating theme config:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// GET /api/configs/extra
+exports.getExtraConfig = async (req, res) => {
+  try {
+    const row = await Config.findOne({ where: { name: 'extraConfig' }, raw: true });
+    if (!row) return res.status(404).json({ message: "Extra config not found" });
+
+    const value = row.value ? JSON.parse(row.value) : {};
+    res.json(value);
+  } catch (err) {
+    console.error("Error fetching extra config:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// PUT /api/configs/extra
+exports.updateExtraConfig = async (req, res) => {
+  try {
+    const payload = JSON.stringify(req.body);
+
+    const [updated] = await Config.update(
+      { value: payload },
+      { where: { name: 'extraConfig' } }
+    );
+
+    if (updated === 0) {
+      // No record exists, create one
+      await Config.create({
+        name: 'extraConfig',
+        value: payload,
+        operator_id: 1,
+        zoneName: 'default'
+      });
+      return res.status(201).json({ message: "Extra config created" });
+    }
+
+    res.json({ message: "Extra config updated" });
+  } catch (err) {
+    console.error("Error updating extra config:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// GET /api/configs/portal
+exports.getPortalConfig = async (req, res) => {
+  try {
+    const row = await Config.findOne({ where: { name: 'portalConfig' }, raw: true });
+    if (!row) return res.status(404).json({ message: "Portal config not found" });
+
+    const value = row.value ? JSON.parse(row.value) : {};
+    res.json(value);
+  } catch (err) {
+    console.error("Error fetching portal config:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// PUT /api/configs/portal
+exports.updatePortalConfig = async (req, res) => {
+  try {
+    const payload = JSON.stringify(req.body);
+
+    const [updated] = await Config.update(
+      { value: payload },
+      { where: { name: 'portalConfig' } }
+    );
+
+    if (updated === 0) {
+      // No record exists, create one
+      await Config.create({
+        name: 'portalConfig',
+        value: payload,
+        operator_id: 1,
+        zoneName: 'default'
+      });
+      return res.status(201).json({ message: "Portal config created" });
+    }
+
+    res.json({ message: "Portal config updated" });
+  } catch (err) {
+    console.error("Error updating portal config:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// GET /api/configs/hotspot
+exports.getHotspotConfig = async (req, res) => {
+  try {
+    const row = await Config.findOne({ where: { name: 'hotspotConfig' }, raw: true });
+    if (!row) return res.status(404).json({ message: "Hotspot config not found" });
+
+    const value = row.value ? JSON.parse(row.value) : {};
+    res.json(value);
+  } catch (err) {
+    console.error("Error fetching hotspot config:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// PUT /api/configs/hotspot
+exports.updateHotspotConfig = async (req, res) => {
+  try {
+    const payload = JSON.stringify(req.body);
+
+    const [updated] = await Config.update(
+      { value: payload },
+      { where: { name: 'hotspotConfig' } }
+    );
+
+    if (updated === 0) {
+      // No record exists, create one
+      await Config.create({
+        name: 'hotspotConfig',
+        value: payload,
+        operator_id: 1,
+        zoneName: 'default'
+      });
+      return res.status(201).json({ message: "Hotspot config created" });
+    }
+
+    res.json({ message: "Hotspot config updated" });
+  } catch (err) {
+    console.error("Error updating hotspot config:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// GET /api/configs/permissions
+exports.getPermissionsConfig = async (req, res) => {
+  try {
+    const row = await Config.findOne({ where: { name: 'permissionsConfig' }, raw: true });
+    if (!row) return res.status(404).json({ message: "Permissions config not found" });
+
+    const value = row.value ? JSON.parse(row.value) : {};
+    res.json(value);
+  } catch (err) {
+    console.error("Error fetching permissions config:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// PUT /api/configs/permissions
+exports.updatePermissionsConfig = async (req, res) => {
+  try {
+    const payload = JSON.stringify(req.body);
+
+    const [updated] = await Config.update(
+      { value: payload },
+      { where: { name: 'permissionsConfig' } }
+    );
+
+    if (updated === 0) {
+      // No record exists, create one
+      await Config.create({
+        name: 'permissionsConfig',
+        value: payload,
+        operator_id: 1,
+        zoneName: 'default'
+      });
+      return res.status(201).json({ message: "Permissions config created" });
+    }
+
+    res.json({ message: "Permissions config updated" });
+  } catch (err) {
+    console.error("Error updating permissions config:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
