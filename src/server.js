@@ -48,9 +48,6 @@ app.get("/health", (req, res) => {
   });
 });
 
-// Configs Routes 
-const configsRoutes = require('./routes/configs.routes');
-app.use('/api/configs', configsRoutes);
 
 // Subscribers
 const subscriberRoutes = require("./routes/subscriber.routes");
