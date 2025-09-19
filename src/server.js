@@ -87,6 +87,15 @@ const billbooksRoutes = require("./routes/billbooks.routes");
 app.use("/api/billbooks", billbooksRoutes);
 
 
+// ✅ Use Configs Routes
+const configsRoutes = require("./routes/configs.routes");
+app.use("/api/configs", configsRoutes);
+
+// ✅ NEW: Bulk User Lots Routes
+const bulkLotsRoutes = require("./routes/bulkLots.routes");
+app.use("/api/bulk-lots", bulkLotsRoutes);
+
+
   // Recharges routes
   const reportsRoutes = require("./routes/reports.routes");
 app.use("/api/reports", reportsRoutes);
@@ -104,7 +113,6 @@ app.use('/api/otts', ottRoutes);
 //email template
 const emailTemplateRoutes = require("./routes/emailtemplates.routes");
 app.use("/api/emailtemplates", emailTemplateRoutes);
-
 
 
 // -------------------- ERROR HANDLING -------------------- //

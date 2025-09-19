@@ -93,53 +93,92 @@ exports.updateTaxConfig = async (req, res) => {
   }
 };
 
-// GET /api/configs/kyc
+
 exports.getKycConfig = async (req, res) => {
   try {
-    const row = await Config.findOne({ where: { name: 'configKyc' }, raw: true });
-    if (!row) return res.status(404).json({ message: "KYC config not found" });
+    console.log("Fetching KYC config..."); // Debug log
+    
+    // Fetch Ekyc provider status
+    const ekycRow = await Config.findOne({ where: { name: 'configEKyc' }, raw: true });
+    // Fetch QuickEKyc API key
+    const quickekycRow = await Config.findOne({ where: { name: 'configQuickekyc' }, raw: true });
 
-    const value = row.value ? JSON.parse(row.value) : {};
-    res.json(value);
+    console.log("EKyc row:", ekycRow); // Debug log
+    console.log("QuickEKyc row:", quickekycRow); // Debug log
+
+    const Ekyc = ekycRow && ekycRow.value ? JSON.parse(ekycRow.value) : { surepass: false, quickekyc: false };
+    const quickekyc = quickekycRow && quickekycRow.value ? JSON.parse(quickekycRow.value) : {};
+    
+    const response = {
+      kycApiType: { Surepass: "surepass", QuickEKyc: "quickekyc" },
+      Ekyc,
+      quickekyc,
+      surepass: null  // you can replace null with data if you add Surepass config in DB
+    };
+
+    console.log("Sending response:", response); // Debug log
+    res.json(response);
+
   } catch (err) {
     console.error("Error fetching KYC config:", err);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error", error: err.message });
   }
 };
 
-// PUT /api/configs/kyc
 exports.updateKycConfig = async (req, res) => {
   try {
-    const { provider, apiKey, isEnabled } = req.body;
+    console.log("Updating KYC config with:", req.body); // Debug log
+    
+    const { surepass, quickekyc } = req.body;
 
-    const payload = JSON.stringify({
-      provider,
-      apiKey,
-      isEnabled
+    // Update configEKyc (enable/disable providers)
+    const ekycPayload = JSON.stringify({
+      surepass: surepass?.enabled ?? false,
+      quickekyc: quickekyc?.enabled ?? false
     });
 
-    const [updated] = await Config.update(
-      { value: payload },
-      { where: { name: 'configKyc' } }
-    );
+    // Find or create configEKyc record
+    const [ekycRecord, created] = await Config.findOrCreate({
+      where: { name: 'configEKyc' },
+      defaults: {
+        name: 'configEKyc',
+        value: ekycPayload,
+        operator_id: 1, // You may need to adjust this based on your requirements
+        zoneName: 'default' // You may need to adjust this based on your requirements
+      }
+    });
 
-    if (updated === 0) {
-      // No record exists, create one
-      await Config.create({
-        name: 'configKyc',
-        value: payload,
-        operator_id: 1,  // adjust based on your multi-tenant logic
-        zoneName: 'default'
-      });
-      return res.status(201).json({ message: "KYC config created" });
+    if (!created) {
+      await ekycRecord.update({ value: ekycPayload });
     }
 
-    res.json({ message: "KYC config updated" });
+    // Update QuickEKyc API key if provided
+    if (quickekyc?.apiKey !== undefined) {
+      const quickekycPayload = JSON.stringify({ apiKey: quickekyc.apiKey });
+      
+      const [quickekycRecord, quickekycCreated] = await Config.findOrCreate({
+        where: { name: 'configQuickekyc' },
+        defaults: {
+          name: 'configQuickekyc',
+          value: quickekycPayload,
+          operator_id: 1, // You may need to adjust this based on your requirements
+          zoneName: 'default' // You may need to adjust this based on your requirements
+        }
+      });
+
+      if (!quickekycCreated) {
+        await quickekycRecord.update({ value: quickekycPayload });
+      }
+    }
+
+    res.json({ message: "KYC config updated successfully" });
+
   } catch (err) {
     console.error("Error updating KYC config:", err);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error", error: err.message });
   }
 };
+
 
 // GET /api/configs/theme
 exports.getThemeConfig = async (req, res) => {
@@ -350,3 +389,4 @@ exports.updatePermissionsConfig = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
