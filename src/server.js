@@ -1,3 +1,4 @@
+// server.js
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
@@ -18,11 +19,12 @@ app.use(
 
 app.use(express.json());
 
-// -------------------- ROUTES -------------------- //
+// -------------------- ROOT TEST ROUTE -------------------- //
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to the API 🚀" });
 });
 
+// -------------------- API ROUTES -------------------- //
 // Subscribers
 const subscriberRoutes = require("./routes/subscriber.routes");
 app.use("/api/subscribers", subscriberRoutes);
@@ -55,31 +57,46 @@ app.use("/api/receipts", receiptsRoutes);
 const onlineTransactionsRoutes = require("./routes/userpgs.routes");
 app.use("/api/online-transactions", onlineTransactionsRoutes);
 
-  // Recharges routes
-  const reportsRoutes = require("./routes/reports.routes");
+// Reports
+const reportsRoutes = require("./routes/reports.routes");
 app.use("/api/reports", reportsRoutes);
+
+// Recharges
 const rechargeRoutes = require("./routes/recharges.routes");
 app.use("/api/recharges", rechargeRoutes);
 
+// Configs
+const configsRoutes = require("./routes/configs.routes");
+app.use("/api/configs", configsRoutes);
 
-  // Configs routes
-const configsRoutes = require('./routes/configs.routes');
-app.use('/api/configs', configsRoutes);
-
+// Email Templates
 const emailTemplateRoutes = require("./routes/emailtemplates.routes");
 app.use("/api/emailtemplates", emailTemplateRoutes);
 
+// Radpostauth (Connection Attempts)
 const radpostauthRoutes = require("./routes/radpostauth.routes");
 app.use("/api/connection-attempts", radpostauthRoutes);
 
+// Active Records
+const activeRecordsRoutes = require("./routes/activeRecords.routes");
+app.use("/api/active-records", activeRecordsRoutes);
+
+const zoneLedgersRoutes = require("./routes/zoneledgers.routes");
+app.use("/api/zoneledgers", zoneLedgersRoutes);
 
 
-// ✅ Use Billbooks Routes
+
+// Billbooks
 const billbooksRoutes = require("./routes/billbooks.routes");
 app.use("/api/billbooks", billbooksRoutes);
 
+// ✅ Walletledgers (put BEFORE the 404 handler)
+console.log("Loading Walletledgers route...");
+const walletledgersRoutes = require("./routes/walletledgers.routes");
+app.use("/api/walletledgers", walletledgersRoutes);
+
 // -------------------- ERROR HANDLING -------------------- //
-// 404 handler
+// 404 handler must be LAST
 app.use((req, res, next) => {
   res.status(404).json({ error: "Route not found" });
 });
