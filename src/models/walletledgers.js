@@ -114,4 +114,4 @@ Walletledger.init(
   }
 );
 
-module.export
+module.exports = Walletledger;
