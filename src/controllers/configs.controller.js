@@ -64,8 +64,10 @@ exports.delete = async (req, res) => {
   }
 };
 
+
 // GET /api/configs/tax
 exports.getTaxConfig = async (req, res) => {
+
   try {
     const row = await Config.findOne({ where: { name: 'configTax' } });
     if (!row) return res.status(404).json({ message: 'Tax config not found' });
@@ -79,7 +81,7 @@ exports.getTaxConfig = async (req, res) => {
 };
 
 // PUT /api/configs/tax
-exports.updateTaxConfig = async (req, res) => {
+const updateTaxConfig = async (req, res) => {
   try {
     const row = await Config.findOne({ where: { name: 'configTax' } });
     if (!row) return res.status(404).json({ message: 'Tax config not found' });
@@ -94,7 +96,7 @@ exports.updateTaxConfig = async (req, res) => {
 };
 
 
-exports.getKycConfig = async (req, res) => {
+const getKycConfig = async (req, res) => {
   try {
     console.log("Fetching KYC config..."); // Debug log
     
@@ -125,7 +127,7 @@ exports.getKycConfig = async (req, res) => {
   }
 };
 
-exports.updateKycConfig = async (req, res) => {
+const updateKycConfig = async (req, res) => {
   try {
     console.log("Updating KYC config with:", req.body); // Debug log
     
@@ -278,115 +280,19 @@ exports.getPortalConfig = async (req, res) => {
   }
 };
 
-// PUT /api/configs/portal
-exports.updatePortalConfig = async (req, res) => {
-  try {
-    const payload = JSON.stringify(req.body);
 
-    const [updated] = await Config.update(
-      { value: payload },
-      { where: { name: 'portalConfig' } }
-    );
-
-    if (updated === 0) {
-      // No record exists, create one
-      await Config.create({
-        name: 'portalConfig',
-        value: payload,
-        operator_id: 1,
-        zoneName: 'default'
-      });
-      return res.status(201).json({ message: "Portal config created" });
-    }
-
-    res.json({ message: "Portal config updated" });
-  } catch (err) {
-    console.error("Error updating portal config:", err);
-    res.status(500).json({ message: "Internal server error" });
-  }
+// Export everything
+module.exports = {
+  getAll,
+  getById,
+  create,
+  update,
+  delete: del,
+  getMailConfig,
+  getTaxConfig,
+  updateTaxConfig,
+  getKycConfig,
+  updateKycConfig
 };
 
-// GET /api/configs/hotspot
-exports.getHotspotConfig = async (req, res) => {
-  try {
-    const row = await Config.findOne({ where: { name: 'hotspotConfig' }, raw: true });
-    if (!row) return res.status(404).json({ message: "Hotspot config not found" });
-
-    const value = row.value ? JSON.parse(row.value) : {};
-    res.json(value);
-  } catch (err) {
-    console.error("Error fetching hotspot config:", err);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
-
-// PUT /api/configs/hotspot
-exports.updateHotspotConfig = async (req, res) => {
-  try {
-    const payload = JSON.stringify(req.body);
-
-    const [updated] = await Config.update(
-      { value: payload },
-      { where: { name: 'hotspotConfig' } }
-    );
-
-    if (updated === 0) {
-      // No record exists, create one
-      await Config.create({
-        name: 'hotspotConfig',
-        value: payload,
-        operator_id: 1,
-        zoneName: 'default'
-      });
-      return res.status(201).json({ message: "Hotspot config created" });
-    }
-
-    res.json({ message: "Hotspot config updated" });
-  } catch (err) {
-    console.error("Error updating hotspot config:", err);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
-
-// GET /api/configs/permissions
-exports.getPermissionsConfig = async (req, res) => {
-  try {
-    const row = await Config.findOne({ where: { name: 'permissionsConfig' }, raw: true });
-    if (!row) return res.status(404).json({ message: "Permissions config not found" });
-
-    const value = row.value ? JSON.parse(row.value) : {};
-    res.json(value);
-  } catch (err) {
-    console.error("Error fetching permissions config:", err);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
-
-// PUT /api/configs/permissions
-exports.updatePermissionsConfig = async (req, res) => {
-  try {
-    const payload = JSON.stringify(req.body);
-
-    const [updated] = await Config.update(
-      { value: payload },
-      { where: { name: 'permissionsConfig' } }
-    );
-
-    if (updated === 0) {
-      // No record exists, create one
-      await Config.create({
-        name: 'permissionsConfig',
-        value: payload,
-        operator_id: 1,
-        zoneName: 'default'
-      });
-      return res.status(201).json({ message: "Permissions config created" });
-    }
-
-    res.json({ message: "Permissions config updated" });
-  } catch (err) {
-    console.error("Error updating permissions config:", err);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
 
