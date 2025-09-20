@@ -15,11 +15,11 @@ const Invoice = sequelize.define(
     },
     billbook_id: {
       type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
+   allowNull: true, 
     },
     invoiceNo: {
       type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
+       allowNull: true,
     },
     user_id: {
       type: DataTypes.BIGINT.UNSIGNED,
