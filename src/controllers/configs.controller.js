@@ -1,26 +1,34 @@
 const Config = require('../models/configs');
 
+
 // ----------------------
 // Generic CRUD Handlers
 // ----------------------
 async function getAll(req, res) {
+
   try {
-    const rows = await Config.findAll({ raw: true });
-    res.json(rows);
+    const configs = await Config.findAll();
+    res.json(configs);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Error fetching configs:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 }
 
+
 async function getById(req, res) {
+
+
   try {
-    const row = await Config.findByPk(req.params.id);
-    if (!row) return res.status(404).json({ message: 'Config record not found' });
-    res.json(row);
+    const config = await Config.findByPk(req.params.id);
+    if (!config) return res.status(404).json({ error: 'Config not found' });
+    res.json(config);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Error fetching config:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 }
+
 
 async function create(req, res) {
   try {
@@ -30,33 +38,40 @@ async function create(req, res) {
     }
     const newRow = await Config.create(req.body);
     res.status(201).json({ message: 'Config record created', id: newRow.id });
+
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Error creating config:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 }
+
 
 async function update(req, res) {
-  try {
-    const row = await Config.findByPk(req.params.id);
-    if (!row) return res.status(404).json({ message: 'Config record not found' });
 
-    await row.update(req.body);
-    res.json({ message: 'Config record updated' });
+  try {
+    const config = await Config.findByPk(req.params.id);
+    if (!config) return res.status(404).json({ error: 'Config not found' });
+    await config.update(req.body);
+    res.json(config);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Error updating config:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 }
 
-async function remove(req, res) {
-  try {
-    const row = await Config.findByPk(req.params.id);
-    if (!row) return res.status(404).json({ message: 'Config record not found' });
 
-    await row.destroy();
-    res.json({ message: 'Config record deleted' });
+async function remove(req, res) {
+
+  try {
+    const config = await Config.findByPk(req.params.id);
+    if (!config) return res.status(404).json({ error: 'Config not found' });
+    await config.destroy();
+    res.json({ message: 'Config deleted' });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Error deleting config:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
+
 }
 
 // ----------------------
@@ -64,6 +79,7 @@ async function remove(req, res) {
 // ----------------------
 
 async function getTaxConfig(req, res) {
+
   try {
     const row = await Config.findOne({ where: { name: 'configTax' } });
     if (!row) return res.status(404).json({ message: 'Tax config not found' });
@@ -88,6 +104,7 @@ async function updateTaxConfig(req, res) {
 
 async function getKycConfig(req, res) {
   try {
+
     const ekycRow = await Config.findOne({ where: { name: 'configEKyc' }, raw: true });
     const quickekycRow = await Config.findOne({ where: { name: 'configQuickekyc' }, raw: true });
 
@@ -186,6 +203,7 @@ async function updatePermissionsConfig(req, res) {
 }
 
 // ✅ Final Export
+
 module.exports = {
   getAll,
   getById,
@@ -195,6 +213,7 @@ module.exports = {
   getTaxConfig,
   updateTaxConfig,
   getKycConfig,
+
   updateKycConfig,
   getThemeConfig,
   updateThemeConfig,
@@ -207,3 +226,4 @@ module.exports = {
   getPermissionsConfig,
   updatePermissionsConfig
 };
+
