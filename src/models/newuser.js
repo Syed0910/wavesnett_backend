@@ -6,213 +6,209 @@ const User = sequelize.define(
   "User",
   {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT.UNSIGNED,
       primaryKey: true,
       autoIncrement: true,
     },
     username: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(255),
       allowNull: false,
+      unique: true,
     },
     password: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(255),
       allowNull: false,
     },
     oldId: {
       type: DataTypes.INTEGER,
-      field: "oldId",
+      allowNull: true,
     },
     oldPassword: {
-      type: DataTypes.STRING,
-      field: "oldPassword",
+      type: DataTypes.STRING(255),
+      allowNull: true,
     },
     plan_id: {
       type: DataTypes.BIGINT.UNSIGNED,
-      field: "plan_id",
+      allowNull: true,
     },
     planName: {
-      type: DataTypes.STRING,
-      field: "planName",
+      type: DataTypes.STRING(255),
+      allowNull: true,
     },
     changeplan_id: {
       type: DataTypes.BIGINT.UNSIGNED,
-      field: "changeplan_id",
+      allowNull: true,
     },
     changeplanName: {
-      type: DataTypes.STRING,
-      field: "changeplanName",
+      type: DataTypes.STRING(255),
+      allowNull: true,
     },
     plangroup_id: {
       type: DataTypes.BIGINT.UNSIGNED,
-      field: "plangroup_id",
+      allowNull: true,
       defaultValue: 0,
     },
     planGroup: {
       type: DataTypes.STRING(64),
-      field: "planGroup",
+      allowNull: true,
     },
     postPlan: {
       type: DataTypes.BOOLEAN,
-      field: "postPlan",
+      allowNull: true,
     },
     simUse: {
       type: DataTypes.TINYINT.UNSIGNED,
-      field: "simUse",
+      allowNull: false,
       defaultValue: 1,
     },
     expire: {
       type: DataTypes.TINYINT.UNSIGNED,
-      field: "expire",
       allowNull: true,
     },
     fup: {
       type: DataTypes.TINYINT.UNSIGNED,
-      field: "fup",
       allowNull: true,
     },
     fupNotify: {
       type: DataTypes.BOOLEAN,
-      field: "fupNotify",
+      allowNull: false,
       defaultValue: false,
     },
     quota: {
       type: DataTypes.TINYINT.UNSIGNED,
-      field: "quota",
+      allowNull: true,
     },
     grace: {
       type: DataTypes.TINYINT.UNSIGNED,
-      field: "grace",
+      allowNull: true,
     },
     graceDate: {
       type: DataTypes.DATEONLY,
-      field: "graceDate",
+      allowNull: true,
     },
     dataLimit: {
       type: DataTypes.TINYINT.UNSIGNED,
-      field: "dataLimit",
+      allowNull: true,
     },
     status: {
       type: DataTypes.BOOLEAN,
-      field: "status",
+      allowNull: false,
       defaultValue: false,
     },
     suspend: {
       type: DataTypes.BOOLEAN,
-      field: "suspend",
+      allowNull: false,
       defaultValue: false,
     },
     startOnLogin: {
       type: DataTypes.BOOLEAN,
-      field: "startOnLogin",
+      allowNull: true,
     },
     portalLogin: {
       type: DataTypes.BOOLEAN,
-      field: "portalLogin",
       allowNull: false,
     },
     autoInvoice: {
       type: DataTypes.BOOLEAN,
-      field: "autoInvoice",
       allowNull: false,
     },
     autoRenew: {
       type: DataTypes.BOOLEAN,
-      field: "autoRenew",
+      allowNull: true,
     },
     startDate: {
       type: DataTypes.DATE,
-      field: "startDate",
+      allowNull: true,
     },
     expiryDate: {
       type: DataTypes.DATE,
-      field: "expiryDate",
+      allowNull: true,
     },
     taxNo: {
-      type: DataTypes.STRING,
-      field: "taxNo",
+      type: DataTypes.STRING(255),
+      allowNull: true,
     },
     discount: {
-      type: DataTypes.STRING,
-      field: "discount",
+      type: DataTypes.STRING(255),
       allowNull: false,
+      defaultValue: "0",
     },
     planCost: {
       type: DataTypes.DECIMAL(10, 2),
-      field: "planCost",
+      allowNull: true,
     },
     mac: {
-      type: DataTypes.STRING,
-      field: "mac",
+      type: DataTypes.STRING(255),
+      allowNull: true,
     },
     userType: {
       type: DataTypes.INTEGER.UNSIGNED,
-      field: "userType",
+      allowNull: false,
       defaultValue: 1,
     },
     bandChange: {
       type: DataTypes.BOOLEAN,
-      field: "bandChange",
+      allowNull: false,
       defaultValue: false,
     },
     ottSubCode: {
-      type: DataTypes.STRING,
-      field: "ottSubCode",
+      type: DataTypes.STRING(255),
+      allowNull: true,
     },
     activeAdmin: {
       type: DataTypes.BOOLEAN,
-      field: "activeAdmin",
+      allowNull: false,
       defaultValue: false,
     },
     bill: {
       type: DataTypes.DECIMAL(10, 2),
-      field: "bill",
-      defaultValue: 0.0,
+      allowNull: false,
+      defaultValue: 0.00,
     },
     openingBalance: {
       type: DataTypes.DECIMAL(10, 2),
-      field: "openingBalance",
-      defaultValue: 0.0,
+      allowNull: false,
+      defaultValue: 0.00,
     },
     taxable: {
       type: DataTypes.BOOLEAN,
-      field: "taxable",
+      allowNull: false,
       defaultValue: false,
     },
     lastLogin: {
       type: DataTypes.DATE,
-      field: "lastLogin",
+      allowNull: true,
     },
     operator_id: {
       type: DataTypes.BIGINT.UNSIGNED,
-      field: "operator_id",
       allowNull: false,
     },
     zoneName: {
-      type: DataTypes.STRING,
-      field: "zoneName",
+      type: DataTypes.STRING(255),
       allowNull: false,
     },
     createdBy: {
-      type: DataTypes.STRING,
-      field: "createdBy",
+      type: DataTypes.STRING(255),
+      allowNull: true,
     },
     updatedBy: {
-      type: DataTypes.STRING,
-      field: "updatedBy",
+      type: DataTypes.STRING(255),
+      allowNull: true,
     },
     created_at: {
       type: DataTypes.DATE,
-      field: "created_at",
+      allowNull: true,
     },
     updated_at: {
       type: DataTypes.DATE,
-      field: "updated_at",
+      allowNull: true,
     },
   },
   {
     tableName: "users",
-    timestamps: false, // disable default createdAt/updatedAt
-    underscored: true, // map created_at instead of createdAt
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at'
   }
 );
 

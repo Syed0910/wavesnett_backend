@@ -1,96 +1,77 @@
 const Config = require('../models/configs');
 
-
-// ----------------------
-// Generic CRUD Handlers
-// ----------------------
-async function getAll(req, res) {
-
+// ---------------- Generic CRUD ----------------
+const getAll = async (req, res) => {
   try {
-    const configs = await Config.findAll();
-    res.json(configs);
+    const rows = await Config.findAll({ raw: true });
+    res.json(rows);
   } catch (err) {
-    console.error('Error fetching configs:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: err.message });
   }
-}
+};
 
-
-async function getById(req, res) {
-
-
+const getById = async (req, res) => {
   try {
-    const config = await Config.findByPk(req.params.id);
-    if (!config) return res.status(404).json({ error: 'Config not found' });
-    res.json(config);
+    const row = await Config.findByPk(req.params.id);
+    if (!row) return res.status(404).json({ message: 'Config record not found' });
+    res.json(row);
   } catch (err) {
-    console.error('Error fetching config:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: err.message });
   }
-}
+};
 
-
-async function create(req, res) {
+const create = async (req, res) => {
   try {
     const { name, operator_id, zoneName } = req.body;
     if (!name || !operator_id || !zoneName) {
       return res.status(400).json({ message: 'name, operator_id, and zoneName are required' });
     }
+
     const newRow = await Config.create(req.body);
     res.status(201).json({ message: 'Config record created', id: newRow.id });
-
   } catch (err) {
-    console.error('Error creating config:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: err.message });
   }
-}
+};
 
-
-async function update(req, res) {
-
+const update = async (req, res) => {
   try {
-    const config = await Config.findByPk(req.params.id);
-    if (!config) return res.status(404).json({ error: 'Config not found' });
-    await config.update(req.body);
-    res.json(config);
+    const row = await Config.findByPk(req.params.id);
+    if (!row) return res.status(404).json({ message: 'Config record not found' });
+
+    await row.update(req.body);
+    res.json({ message: 'Config record updated' });
   } catch (err) {
-    console.error('Error updating config:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: err.message });
   }
-}
+};
 
-
-async function remove(req, res) {
-
+const remove = async (req, res) => {
   try {
-    const config = await Config.findByPk(req.params.id);
-    if (!config) return res.status(404).json({ error: 'Config not found' });
-    await config.destroy();
-    res.json({ message: 'Config deleted' });
+    const row = await Config.findByPk(req.params.id);
+    if (!row) return res.status(404).json({ message: 'Config record not found' });
+
+    await row.destroy();
+    res.json({ message: 'Config record deleted' });
   } catch (err) {
-    console.error('Error deleting config:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: err.message });
   }
+};
 
-}
-
-// ----------------------
-// Specific Configs
-// ----------------------
-
-async function getTaxConfig(req, res) {
-
+// ---------------- Tax ----------------
+const getTaxConfig = async (req, res) => {
   try {
     const row = await Config.findOne({ where: { name: 'configTax' } });
     if (!row) return res.status(404).json({ message: 'Tax config not found' });
 
-    res.json(row.value ? JSON.parse(row.value) : {});
+    const parsedValue = row.value ? JSON.parse(row.value) : {};
+    res.json(parsedValue);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-}
+};
 
-async function updateTaxConfig(req, res) {
+const updateTaxConfig = async (req, res) => {
   try {
     const row = await Config.findOne({ where: { name: 'configTax' } });
     if (!row) return res.status(404).json({ message: 'Tax config not found' });
@@ -100,28 +81,29 @@ async function updateTaxConfig(req, res) {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-}
+};
 
-async function getKycConfig(req, res) {
+// ---------------- KYC ----------------
+const getKycConfig = async (req, res) => {
   try {
-
     const ekycRow = await Config.findOne({ where: { name: 'configEKyc' }, raw: true });
     const quickekycRow = await Config.findOne({ where: { name: 'configQuickekyc' }, raw: true });
 
-    const Ekyc = ekycRow?.value ? JSON.parse(ekycRow.value) : { surepass: false, quickekyc: false };
-    const quickekyc = quickekycRow?.value ? JSON.parse(quickekycRow.value) : {};
+    const Ekyc = ekycRow && ekycRow.value ? JSON.parse(ekycRow.value) : { surepass: false, quickekyc: false };
+    const quickekyc = quickekycRow && quickekycRow.value ? JSON.parse(quickekycRow.value) : {};
 
     res.json({
       kycApiType: { Surepass: "surepass", QuickEKyc: "quickekyc" },
       Ekyc,
-      quickekyc
+      quickekyc,
+      surepass: null
     });
   } catch (err) {
     res.status(500).json({ message: "Internal server error", error: err.message });
   }
-}
+};
 
-async function updateKycConfig(req, res) {
+const updateKycConfig = async (req, res) => {
   try {
     const { surepass, quickekyc } = req.body;
 
@@ -140,9 +122,11 @@ async function updateKycConfig(req, res) {
       }
     });
 
-    if (!created) await ekycRecord.update({ value: ekycPayload });
+    if (!created) {
+      await ekycRecord.update({ value: ekycPayload });
+    }
 
-    if (quickekyc?.apiKey) {
+    if (quickekyc?.apiKey !== undefined) {
       const quickekycPayload = JSON.stringify({ apiKey: quickekyc.apiKey });
 
       const [quickekycRecord, quickekycCreated] = await Config.findOrCreate({
@@ -155,55 +139,209 @@ async function updateKycConfig(req, res) {
         }
       });
 
-      if (!quickekycCreated) await quickekycRecord.update({ value: quickekycPayload });
+      if (!quickekycCreated) {
+        await quickekycRecord.update({ value: quickekycPayload });
+      }
     }
 
     res.json({ message: "KYC config updated successfully" });
   } catch (err) {
     res.status(500).json({ message: "Internal server error", error: err.message });
   }
-}
+};
 
-// ----------------------
-// Stub Handlers for Theme, Extra, Portal, etc.
-// ----------------------
-async function getThemeConfig(req, res) {
-  res.json({ message: "Theme config endpoint not implemented yet" });
-}
-async function updateThemeConfig(req, res) {
-  res.json({ message: "Theme config update endpoint not implemented yet" });
-}
+// ---------------- Theme ----------------
+const getThemeConfig = async (req, res) => {
+  try {
+    const row = await Config.findOne({ where: { name: 'themeConfig' }, raw: true });
+    if (!row) return res.status(404).json({ message: "Theme config not found" });
 
-async function getExtraConfig(req, res) {
-  res.json({ message: "Extra config endpoint not implemented yet" });
-}
-async function updateExtraConfig(req, res) {
-  res.json({ message: "Extra config update endpoint not implemented yet" });
-}
+    const value = row.value ? JSON.parse(row.value) : {};
+    res.json(value);
+  } catch (err) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
-async function getPortalConfig(req, res) {
-  res.json({ message: "Portal config endpoint not implemented yet" });
-}
-async function updatePortalConfig(req, res) {
-  res.json({ message: "Portal config update endpoint not implemented yet" });
-}
+const updateThemeConfig = async (req, res) => {
+  try {
+    const payload = JSON.stringify(req.body);
 
-async function getHotspotConfig(req, res) {
-  res.json({ message: "Hotspot config endpoint not implemented yet" });
-}
-async function updateHotspotConfig(req, res) {
-  res.json({ message: "Hotspot config update endpoint not implemented yet" });
-}
+    const [updated] = await Config.update(
+      { value: payload },
+      { where: { name: 'themeConfig' } }
+    );
 
-async function getPermissionsConfig(req, res) {
-  res.json({ message: "Permissions config endpoint not implemented yet" });
-}
-async function updatePermissionsConfig(req, res) {
-  res.json({ message: "Permissions config update endpoint not implemented yet" });
-}
+    if (updated === 0) {
+      await Config.create({
+        name: 'themeConfig',
+        value: payload,
+        operator_id: 1,
+        zoneName: 'default'
+      });
+      return res.status(201).json({ message: "Theme config created" });
+    }
 
-// ✅ Final Export
+    res.json({ message: "Theme config updated" });
+  } catch (err) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
+// ---------------- Extra ----------------
+const getExtraConfig = async (req, res) => {
+  try {
+    const row = await Config.findOne({ where: { name: 'extraConfig' }, raw: true });
+    if (!row) return res.status(404).json({ message: "Extra config not found" });
+
+    const value = row.value ? JSON.parse(row.value) : {};
+    res.json(value);
+  } catch (err) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const updateExtraConfig = async (req, res) => {
+  try {
+    const payload = JSON.stringify(req.body);
+
+    const [updated] = await Config.update(
+      { value: payload },
+      { where: { name: 'extraConfig' } }
+    );
+
+    if (updated === 0) {
+      await Config.create({
+        name: 'extraConfig',
+        value: payload,
+        operator_id: 1,
+        zoneName: 'default'
+      });
+      return res.status(201).json({ message: "Extra config created" });
+    }
+
+    res.json({ message: "Extra config updated" });
+  } catch (err) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// ---------------- Portal, Hotspot, Permissions ----------------
+const getPortalConfig = async (req, res) => {
+  try {
+    const row = await Config.findOne({ where: { name: 'portalConfig' }, raw: true });
+    if (!row) return res.status(404).json({ message: "Portal config not found" });
+
+    const value = row.value ? JSON.parse(row.value) : {};
+    res.json(value);
+  } catch (err) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// ---------------- Portal ----------------
+const updatePortalConfig = async (req, res) => {
+  try {
+    const payload = JSON.stringify(req.body);
+
+    const [updated] = await Config.update(
+      { value: payload },
+      { where: { name: 'portalConfig' } }
+    );
+
+    if (updated === 0) {
+      await Config.create({
+        name: 'portalConfig',
+        value: payload,
+        operator_id: 1,
+        zoneName: 'default'
+      });
+      return res.status(201).json({ message: "Portal config created" });
+    }
+
+    res.json({ message: "Portal config updated" });
+  } catch (err) {
+    res.status(500).json({ message: "Internal server error", error: err.message });
+  }
+};
+
+// ---------------- Hotspot ----------------
+const getHotspotConfig = async (req, res) => {
+  try {
+    const row = await Config.findOne({ where: { name: 'hotspotConfig' }, raw: true });
+    if (!row) return res.status(404).json({ message: "Hotspot config not found" });
+
+    const value = row.value ? JSON.parse(row.value) : {};
+    res.json(value);
+  } catch (err) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const updateHotspotConfig = async (req, res) => {
+  try {
+    const payload = JSON.stringify(req.body);
+
+    const [updated] = await Config.update(
+      { value: payload },
+      { where: { name: 'hotspotConfig' } }
+    );
+
+    if (updated === 0) {
+      await Config.create({
+        name: 'hotspotConfig',
+        value: payload,
+        operator_id: 1,
+        zoneName: 'default'
+      });
+      return res.status(201).json({ message: "Hotspot config created" });
+    }
+
+    res.json({ message: "Hotspot config updated" });
+  } catch (err) {
+    res.status(500).json({ message: "Internal server error", error: err.message });
+  }
+};
+
+// ---------------- Permissions ----------------
+const getPermissionsConfig = async (req, res) => {
+  try {
+    const row = await Config.findOne({ where: { name: 'permissionsConfig' }, raw: true });
+    if (!row) return res.status(404).json({ message: "Permissions config not found" });
+
+    const value = row.value ? JSON.parse(row.value) : {};
+    res.json(value);
+  } catch (err) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const updatePermissionsConfig = async (req, res) => {
+  try {
+    const payload = JSON.stringify(req.body);
+
+    const [updated] = await Config.update(
+      { value: payload },
+      { where: { name: 'permissionsConfig' } }
+    );
+
+    if (updated === 0) {
+      await Config.create({
+        name: 'permissionsConfig',
+        value: payload,
+        operator_id: 1,
+        zoneName: 'default'
+      });
+      return res.status(201).json({ message: "Permissions config created" });
+    }
+
+    res.json({ message: "Permissions config updated" });
+  } catch (err) {
+    res.status(500).json({ message: "Internal server error", error: err.message });
+  }
+};
+
+// ---------------- Export all ----------------
 module.exports = {
   getAll,
   getById,
@@ -213,7 +351,6 @@ module.exports = {
   getTaxConfig,
   updateTaxConfig,
   getKycConfig,
-
   updateKycConfig,
   getThemeConfig,
   updateThemeConfig,
@@ -226,4 +363,3 @@ module.exports = {
   getPermissionsConfig,
   updatePermissionsConfig
 };
-
