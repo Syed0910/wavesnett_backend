@@ -1,5 +1,5 @@
 // controllers/newuser.controller.js
-const User = require("../models/users");
+const User = require("../models/user");
 const Plan = require("../models/plans");
 const Nas = require("../models/nas");
 const { Op } = require("sequelize");

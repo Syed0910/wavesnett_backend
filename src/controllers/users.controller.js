@@ -108,11 +108,11 @@ exports.addUser = async (req, res) => {
     }
 
     if (selectPlan) {
-      userData.planName = selectPlan.trim();
+      userData.planName = selectPlan;
     }
 
     if (planGroup) {
-      userData.planGroup = planGroup.trim();
+      userData.planGroup = planGroup;
     }
 
     console.log("Prepared user data:", userData);
