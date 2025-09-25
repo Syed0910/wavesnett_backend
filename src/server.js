@@ -13,7 +13,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "http://127.0.0.1:5173",
-      "http://localhost:3000"
+      "http://localhost:3000",
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -33,7 +33,7 @@ app.get("/", (req, res) => {
       configs: "/api/configs",
       subscribers: "/api/subscribers",
       users: "/api/users",
-      newuser: "/api/newuser",
+      userinfos: "/api/userinfos",
       userdetails: "/api/userdetails",
       operators: "/api/operators",
       nas: "/api/nas",
@@ -41,7 +41,7 @@ app.get("/", (req, res) => {
       invoices: "/api/invoices",
       receipts: "/api/receipts",
       onlineTransactions: "/api/online-transactions",
-      billbooks: "/api/billbooks"
+      billbooks: "/api/billbooks",
     },
   });
 });
@@ -57,13 +57,13 @@ app.get("/health", (req, res) => {
 
 // -------------------- ROUTES -------------------- //
 
-// Users 
+// Users (GET + POST)
 const userRoutes = require("./routes/users.routes");
 app.use("/api/users", userRoutes);
 
-// New User routes
-const newUserRoutes = require("./routes/newuser.routes");
-app.use("/api/newuser", newUserRoutes);
+// UserInfos (new endpoint)
+const userInfosRoutes = require("./routes/userInfos.routes");
+app.use("/api/userinfos", userInfosRoutes);
 
 // Subscribers
 const subscriberRoutes = require("./routes/subscriber.routes");
@@ -154,31 +154,6 @@ app.use((req, res, next) => {
   res.status(404).json({
     error: "Route not found",
     message: `Cannot ${req.method} ${req.path}`,
-    availableRoutes: [
-      "GET /",
-      "GET /health",
-      "GET /api/configs",
-      "GET /api/subscribers",
-      "GET /api/users",
-      "POST /api/users",
-      "POST /api/newuser",
-      "GET /api/newuser/plans",
-      "GET /api/newuser/nas",
-      "GET /api/newuser/plangroups", 
-      "GET /api/newuser/zones",
-      "GET /api/users/data/plans",
-      "GET /api/users/data/nas",
-      "GET /api/users/data/plangroups",
-      "GET /api/users/data/zones",
-      "GET /api/userdetails",
-      "GET /api/operators",
-      "GET /api/nas",
-      "GET /api/plans",
-      "GET /api/invoices",
-      "GET /api/receipts",
-      "GET /api/online-transactions",
-      "GET /api/billbooks"
-    ],
   });
 });
 
@@ -235,12 +210,7 @@ const startServer = async () => {
       console.log(`Server running on http://localhost:${PORT}`);
       console.log(`Health check: http://localhost:${PORT}/health`);
       console.log(`Users API: http://localhost:${PORT}/api/users`);
-      console.log(`New User API: http://localhost:${PORT}/api/newuser`);
-      console.log(`Create User: POST http://localhost:${PORT}/api/newuser`);
-      console.log(`Get Plans: http://localhost:${PORT}/api/newuser/plans`);
-      console.log(`Get NAS: http://localhost:${PORT}/api/newuser/nas`);
-      console.log(`Get Plan Groups: http://localhost:${PORT}/api/newuser/plangroups`);
-      console.log(`Get Zones: http://localhost:${PORT}/api/newuser/zones`);
+      console.log(`UserInfos API: http://localhost:${PORT}/api/userinfos`);
       console.log("Server is ready to accept requests!");
     });
   } catch (error) {
