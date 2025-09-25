@@ -3,20 +3,22 @@ const Config = require('../models/configs');
 // ---------------- Generic CRUD ----------------
 const getAll = async (req, res) => {
   try {
-    const rows = await Config.findAll({ raw: true });
-    res.json(rows);
+    const configs = await Config.findAll();
+    res.json(configs);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Error fetching configs:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
 const getById = async (req, res) => {
   try {
-    const row = await Config.findByPk(req.params.id);
-    if (!row) return res.status(404).json({ message: 'Config record not found' });
-    res.json(row);
+    const config = await Config.findByPk(req.params.id);
+    if (!config) return res.status(404).json({ error: 'Config not found' });
+    res.json(config);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Error fetching config:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -30,29 +32,29 @@ const create = async (req, res) => {
     const newRow = await Config.create(req.body);
     res.status(201).json({ message: 'Config record created', id: newRow.id });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Error creating config:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
 const update = async (req, res) => {
   try {
-    const row = await Config.findByPk(req.params.id);
-    if (!row) return res.status(404).json({ message: 'Config record not found' });
-
-    await row.update(req.body);
-    res.json({ message: 'Config record updated' });
+    const config = await Config.findByPk(req.params.id);
+    if (!config) return res.status(404).json({ error: 'Config not found' });
+    await config.update(req.body);
+    res.json(config);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Error updating config:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
 const remove = async (req, res) => {
   try {
-    const row = await Config.findByPk(req.params.id);
-    if (!row) return res.status(404).json({ message: 'Config record not found' });
-
-    await row.destroy();
-    res.json({ message: 'Config record deleted' });
+    const config = await Config.findByPk(req.params.id);
+    if (!config) return res.status(404).json({ error: 'Config not found' });
+    await config.destroy();
+    res.json({ message: 'Config deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -169,20 +171,20 @@ const updateThemeConfig = async (req, res) => {
 
     const [updated] = await Config.update(
       { value: payload },
-      { where: { name: 'themeConfig' } }
+      { where: { name: 'configKyc' } }
     );
 
     if (updated === 0) {
       await Config.create({
-        name: 'themeConfig',
+        name: 'configKyc',
         value: payload,
-        operator_id: 1,
+        operator_id: 1,  // adjust based on your multi-tenant logic
         zoneName: 'default'
       });
-      return res.status(201).json({ message: "Theme config created" });
+      return res.status(201).json({ message: "KYC config created" });
     }
 
-    res.json({ message: "Theme config updated" });
+    res.json({ message: "KYC config updated" });
   } catch (err) {
     res.status(500).json({ message: "Internal server error" });
   }
@@ -198,6 +200,33 @@ const getExtraConfig = async (req, res) => {
     res.json(value);
   } catch (err) {
     res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// ✅ Special: Mail Config
+const getMailConfig = async (req, res) => {
+  try {
+    const config = await Config.findOne({ where: { name: 'configEmail' } });
+
+    if (!config) {
+      return res.status(404).json({ error: 'Mail config not found' });
+    }
+
+    const parsed = JSON.parse(config.value);
+    const firstKey = Object.keys(parsed)[0];
+    const settings = parsed[firstKey];
+
+    res.json({
+      fromEmail: settings.mail_from_address,
+      smtpServer: settings.mail_smtp_address,
+      smtpSecure: settings.mail_smtp_secure,
+      smtpPort: settings.mail_smtp_port,
+      username: settings.mail_username,
+      password: settings.mail_password,
+    });
+  } catch (err) {
+    console.error('Error fetching mail config:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -349,6 +378,7 @@ module.exports = {
   update,
   remove,
   getTaxConfig,
+  getMailConfig,
   updateTaxConfig,
   getKycConfig,
   updateKycConfig,
