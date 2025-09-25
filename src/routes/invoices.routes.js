@@ -1,8 +1,9 @@
 const express = require("express");
-const router = express.Router();
+const router = express.Router();   // ✅ define router first
 
 const invoicesController = require("../controllers/invoices.controller");
 
+// Routes
 router.get("/", invoicesController.getAll);
 router.get("/:id", invoicesController.getById);
 router.post("/", invoicesController.create);
