@@ -141,6 +141,10 @@ console.log("Loading Walletledgers route...");
 const walletledgersRoutes = require("./routes/walletledgers.routes");
 app.use("/api/walletledgers", walletledgersRoutes);
 
+const invoiceUserpgRoutes = require('./routes/invoiceUserpgRoutes');
+app.use('/api/tax-summary', invoiceUserpgRoutes);
+
+
 
 // -------------------- ERROR HANDLING -------------------- //
 // Request logging middleware (optional - for debugging)
@@ -167,7 +171,8 @@ app.use((req, res, next) => {
       "GET /api/invoices",
       "GET /api/receipts",
       "GET /api/online-transactions",
-      "GET /api/billbooks"
+      "GET /api/billbooks",
+      "GET /api/tax-summary"
     ]
   });
 });
