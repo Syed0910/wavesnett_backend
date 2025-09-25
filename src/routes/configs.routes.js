@@ -4,10 +4,14 @@ const router = express.Router();
 
 const configsController = require('../controllers/configs.controller');
 
-// Specific config routes
+// Special configs
+router.get('/mail/config', configsController.getMailConfig);
+
+// Tax config
 router.get('/tax/config', configsController.getTaxConfig);
 router.put('/tax/config', configsController.updateTaxConfig);
 
+// KYC config
 router.get('/kyc/config', configsController.getKycConfig);
 router.put('/kyc/config', configsController.updateKycConfig);
 
