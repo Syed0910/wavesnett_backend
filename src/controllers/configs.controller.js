@@ -203,6 +203,33 @@ const getExtraConfig = async (req, res) => {
   }
 };
 
+// ✅ Special: Mail Config
+const getMailConfig = async (req, res) => {
+  try {
+    const config = await Config.findOne({ where: { name: 'configEmail' } });
+
+    if (!config) {
+      return res.status(404).json({ error: 'Mail config not found' });
+    }
+
+    const parsed = JSON.parse(config.value);
+    const firstKey = Object.keys(parsed)[0];
+    const settings = parsed[firstKey];
+
+    res.json({
+      fromEmail: settings.mail_from_address,
+      smtpServer: settings.mail_smtp_address,
+      smtpSecure: settings.mail_smtp_secure,
+      smtpPort: settings.mail_smtp_port,
+      username: settings.mail_username,
+      password: settings.mail_password,
+    });
+  } catch (err) {
+    console.error('Error fetching mail config:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 const updateExtraConfig = async (req, res) => {
   try {
     const payload = JSON.stringify(req.body);
@@ -351,6 +378,7 @@ module.exports = {
   update,
   remove,
   getTaxConfig,
+  getMailConfig,
   updateTaxConfig,
   getKycConfig,
   updateKycConfig,
