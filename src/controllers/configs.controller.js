@@ -1,7 +1,7 @@
-// controllers/configs.controller.js
 const Config = require('../models/configs');
 
 // Get all configs
+
 const getAll = async (req, res) => {
   try {
     const configs = await Config.findAll();
@@ -12,7 +12,9 @@ const getAll = async (req, res) => {
   }
 };
 
+
 // Get config by ID
+
 const getById = async (req, res) => {
   try {
     const config = await Config.findByPk(req.params.id);
@@ -92,7 +94,6 @@ const getTaxConfig = async (req, res) => {
     const row = await Config.findOne({ where: { name: 'configTax' } });
     if (!row) return res.status(404).json({ message: 'Tax config not found' });
 
-    // Parse the JSON value before sending
     const parsedValue = row.value ? JSON.parse(row.value) : {};
     res.json(parsedValue);
   } catch (err) {
@@ -100,22 +101,19 @@ const getTaxConfig = async (req, res) => {
   }
 };
 
-// PUT /api/configs/tax
 const updateTaxConfig = async (req, res) => {
   try {
     const row = await Config.findOne({ where: { name: 'configTax' } });
     if (!row) return res.status(404).json({ message: 'Tax config not found' });
 
-    // Convert updated tax settings back to JSON
     await row.update({ value: JSON.stringify(req.body) });
-
     res.json({ message: 'Tax configuration updated successfully' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-
+// ---------------- KYC ----------------
 const getKycConfig = async (req, res) => {
   try {
     const row = await Config.findOne({ where: { name: 'configKyc' }, raw: true });
@@ -145,7 +143,6 @@ const updateKycConfig = async (req, res) => {
     );
 
     if (updated === 0) {
-      // No record exists, create one
       await Config.create({
         name: 'configKyc',
         value: payload,
@@ -168,8 +165,7 @@ module.exports = {
   getById,
   create,
   update,
-  delete: del,
-  getMailConfig,
+  remove,
   getTaxConfig,
   updateTaxConfig,
   getKycConfig,

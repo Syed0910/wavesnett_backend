@@ -1,5 +1,5 @@
 const db = require('../config/database'); // your MySQL connection
-
+const User = require("../models/user"); 
 // GET all users with userinfos
 exports.getUsers = async (req, res) => {
   try {
@@ -39,14 +39,103 @@ exports.getUsers = async (req, res) => {
   }
 };
 
-// POST add a user (optional, unchanged)
+
+
 exports.addUser = async (req, res) => {
   try {
-    const data = req.body;
-    const [result] = await db.query("INSERT INTO users SET ?", data);
-    res.json({ message: 'User added', userId: result.insertId });
+    console.log("Received user data:", req.body);
+
+    const {
+      username,
+      password,
+      zone,
+      discount,
+      selectPlan,
+      planGroup,
+      simultaneousUse,
+      ipAddress,
+      generateInvoice,
+      userType,
+    } = req.body;
+
+    // Validate
+    if (!username || !username.trim()) {
+      return res.status(400).json({ error: "Username is required" });
+    }
+    if (!password || !password.trim()) {
+      return res.status(400).json({ error: "Password is required" });
+    }
+
+    // Check if username already exists
+    const existingUser = await User.findOne({ where: { username: username.trim() } });
+    if (existingUser) {
+      return res.status(400).json({ error: "Username already exists" });
+    }
+
+    // Map userType
+    let userTypeValue = 1;
+    switch (userType) {
+      case "User":
+        userTypeValue = 1;
+        break;
+      case "Mac / Static IP":
+        userTypeValue = 2;
+        break;
+      case "Multiple Static IP":
+        userTypeValue = 3;
+        break;
+    }
+
+    // Prepare user data
+    const userData = {
+      username: username.trim(),
+      password,
+      zoneName: zone || "admin",
+      discount: discount || "0",
+      simUse: parseInt(simultaneousUse) || 1,
+      userType: userTypeValue,
+      portalLogin: true,
+      autoInvoice: !!generateInvoice,
+      status: false,
+      suspend: false,
+      operator_id: 1,
+      created_at: new Date(),
+      updated_at: new Date(),
+    };
+
+    if (userType === "Mac / Static IP" && ipAddress) {
+      userData.mac = ipAddress.trim();
+    }
+
+    if (selectPlan) {
+      userData.planName = selectPlan;
+    }
+
+    if (planGroup) {
+      userData.planGroup = planGroup;
+    }
+
+    console.log("Prepared user data:", userData);
+
+    // Insert user into DB via Sequelize
+    const newUser = await User.create(userData);
+
+    res.status(201).json({
+      success: true,
+      message: "User added successfully",
+      user: {
+        id: newUser.id,
+        username: newUser.username,
+        userType,
+        zone: newUser.zoneName,
+      },
+    });
   } catch (err) {
-    console.error('Error adding user:', err);
-    res.status(500).json({ error: 'Failed to add user', details: err.message });
+    console.error("Error adding user:", err);
+    res.status(500).json({
+      error: "Failed to add user",
+      details: err.message,
+      stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
+    });
   }
 };
