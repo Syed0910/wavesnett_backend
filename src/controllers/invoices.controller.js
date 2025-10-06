@@ -8,19 +8,21 @@ exports.getAll = async (req, res) => {
         "id",
         "invoiceNo",
         ["invoiceDate", "date"],
-        ["user_id", "userName"], // alias user_id → userName
         ["username", "name"],
-        ["invstatus_id", "status"],
+        "discount",
+        ["tax1", "igst"],   // alias for IGST
+        ["tax2", "sgst"],   // alias for SGST
+        ["tax3", "cgst"],   // alias for CGST
         ["total", "totalAmt"],
-        "createdBy",
-        ["zoneName", "zone"],
-        "receiveAmount",
-        "notes",
+        ["gstNumber", "gstNumber"],
+        ["phone", "phone"],
+        ["zoneName", "zone"]
       ],
     });
 
     res.json(rows);
   } catch (err) {
+    console.error("Error fetching invoices:", err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -33,14 +35,15 @@ exports.getById = async (req, res) => {
         "id",
         "invoiceNo",
         ["invoiceDate", "date"],
-        ["user_id", "userName"],
         ["username", "name"],
-        ["invstatus_id", "status"],
+        "discount",
+        ["tax1", "igst"],
+        ["tax2", "sgst"],
+        ["tax3", "cgst"],
         ["total", "totalAmt"],
-        "createdBy",
-        ["zoneName", "zone"],
-        "receiveAmount",
-        "notes",
+        ["gstNumber", "gstNumber"],
+        ["phone", "phone"],
+        ["zoneName", "zone"]
       ],
     });
 
@@ -48,10 +51,12 @@ exports.getById = async (req, res) => {
 
     res.json(row);
   } catch (err) {
+    console.error("Error fetching invoice:", err);
     res.status(500).json({ error: err.message });
   }
 };
 
+// create / update / delete remain unchanged
 exports.create = async (req, res) => {
   try {
     const invoice = await Invoice.create(req.body);

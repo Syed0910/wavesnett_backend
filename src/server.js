@@ -142,6 +142,11 @@ console.log("Loading Walletledgers route...");
 const walletledgersRoutes = require("./routes/walletledgers.routes");
 app.use("/api/walletledgers", walletledgersRoutes);
 
+const invoiceUserpgRoutes = require('./routes/invoiceUserpgRoutes');
+app.use('/api/tax-summary', invoiceUserpgRoutes);
+
+
+
 // -------------------- ERROR HANDLING -------------------- //
 // Request logging middleware
 app.use((req, res, next) => {
@@ -154,6 +159,21 @@ app.use((req, res, next) => {
   res.status(404).json({
     error: "Route not found",
     message: `Cannot ${req.method} ${req.path}`,
+    availableRoutes: [
+      "GET /",
+      "GET /health",
+      "GET /api/configs",
+      "GET /api/subscribers",
+      "GET /api/users",
+      "GET /api/userdetails",
+      "GET /api/operators",
+      "GET /api/nas",
+      "GET /api/invoices",
+      "GET /api/receipts",
+      "GET /api/online-transactions",
+      "GET /api/billbooks",
+      "GET /api/tax-summary"
+    ]
   });
 });
 
